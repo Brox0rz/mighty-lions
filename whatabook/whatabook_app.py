@@ -15,16 +15,63 @@
 from pymongo import MongoClient
 
 # Connect to the MongoDB database
-client = MongoClient('insert_mongodb_connection_string_here')
+client = MongoClient('mongodb+srv://whatabook_user:s3cret@whatabook.u3m1hss.mongodb.net/WhatABook')
 db = client['WhatABook']
 
 # Functions for database operations
+# Display all books
 def show_all_books():
-    books = db.books.find({})
-    for book in books:
-        print(f"Title: {book['title']}, Author: {book['author']}, Genre: {book['genre']}")
+    counter = 1
+    for book in db.books.find({}):
+        print(f"{counter}. \tTitle: {book['title']} \n\tAuthor: {book['author']} \n\tGenre: {book['genre']}")
+        counter += 1
+    input("\nPress enter to return to the main menu...")
 
-# ... (more functions for other operations)
+# Display books by genre
+def show_books_by_genre():
+    choice = input(f"\nPlease select between: \n\t1. fantasy books \n\t2. drama books \nEnter number: ")
+    if choice == '1':
+        print("\nFantasy Books:")
+        display_books('genre', 'fantasy')
+        input("\nPress enter to return to the main menu...")
+    elif choice == '2':
+        print("\nDrama Books:")
+        display_books('genre', 'drama')
+        input("\nPress enter to return to the main menu...")
+
+# Display books by author
+def show_books_by_author():
+    choice = input(f"\nPlease select between: \n\t1. J. K. Rowling \n\t2. Suzanne Collins \nEnter number: ")
+    if choice == '1':
+        print("\nBooks by author J. K. Rowling:")
+        display_books('author', 'J. K. Rowling')
+        input("\nPress enter to return to the main menu...")
+    elif choice == '2':
+        print("\nBooks by author Suzanne Collins:")
+        display_books('author', 'Suzanne Collins')
+        input("\nPress enter to return to the main menu...")
+
+# Display customer'' wishlist
+def show_customer_wishlist():
+    counter = 1
+    id = input("\nEnter customer id: ")
+    customer = db.customers.find_one({ 'customerId': id })
+    if customer:
+        print(f"\nThis are {customer['firstName']}'s wishlist books:")
+        for book in customer['wishlist']:
+            print(f"{counter}. \tTitle: {book['title']} \n\tAuthor: {book['author']} \n\tGenre: {book['genre']}")
+            counter += 1
+        input("\nPress enter to return to the menu...")
+    else:
+        input("\nInvalid customer id...Press enter to return to main menu")
+
+
+# Helper functions
+def display_books(type, value):
+    counter = 1
+    for book in db.books.find({ type: value }):
+        print(f"{counter}. Title: {book['title']}")
+        counter += 1
 
 # Main menu function
 def main_menu():
@@ -40,11 +87,11 @@ def main_menu():
         if choice == '1':
             show_all_books()
         elif choice == '2':
-            # Call function to show books by genre
+            show_books_by_genre()
         elif choice == '3':
-            # Call function to show books by author
+            show_books_by_author()
         elif choice == '4':
-            # Call function to display a customer's wishlist
+            show_customer_wishlist()
         elif choice == '5':
             print("Thank you for using WhatABook. Goodbye!")
             break
