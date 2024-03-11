@@ -27,3 +27,27 @@ db.books.find({ author: "Suzanne Collins" });
 
 // Write a query to display a book by bookId.
 db.books.find({ bookId: "45735" });
+
+// Write a query to display a wishlist by customerId.
+db.customers.findOne({ "customerId": "c1000" }, { firstName: 1, lastName: 1, wishlist: true });
+
+// Write a query to add a book to a customer’s wishlist.
+db.customers.updateOne({ "customerId": "c1001" }, {
+    $push: {
+        wishlist: {
+            bookId: "62519",
+            title: "The Hunger Games: Mockinjay - Part 2",
+            genre: "drama",
+            author: "Suzanne Collins"
+        }
+    }
+});
+
+// Write a query to remove a book from a customer’s wishlist. 
+db.customers.updateOne({ "customerId": "c1001" }, {
+    $pull: {
+        wishlist: {
+            "bookId": "62519"
+        }
+    }
+});
